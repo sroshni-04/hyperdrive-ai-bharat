@@ -15,26 +15,42 @@ import {
 } from 'lucide-react';
 import { Dashboard } from '@/components/Dashboard';
 import { RoadRulesBooklet } from '@/components/RoadRulesBooklet';
+import { RoadRulesChatbot } from '@/components/RoadRulesChatbot';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isChatbotMinimized, setIsChatbotMinimized] = useState(true);
 
   if (activeTab === 'dashboard') {
-    return <Dashboard />;
+    return (
+      <>
+        <Dashboard />
+        <RoadRulesChatbot 
+          isMinimized={isChatbotMinimized}
+          onToggleMinimize={() => setIsChatbotMinimized(!isChatbotMinimized)}
+        />
+      </>
+    );
   }
 
   if (activeTab === 'rules') {
     return (
-      <div>
-        <Button 
-          onClick={() => setActiveTab('dashboard')} 
-          variant="outline" 
-          className="m-6 mb-0"
-        >
-          ← Back to Dashboard
-        </Button>
-        <RoadRulesBooklet />
-      </div>
+      <>
+        <div>
+          <Button 
+            onClick={() => setActiveTab('dashboard')} 
+            variant="outline" 
+            className="m-6 mb-0"
+          >
+            ← Back to Dashboard
+          </Button>
+          <RoadRulesBooklet />
+        </div>
+        <RoadRulesChatbot 
+          isMinimized={isChatbotMinimized}
+          onToggleMinimize={() => setIsChatbotMinimized(!isChatbotMinimized)}
+        />
+      </>
     );
   }
 
@@ -132,6 +148,12 @@ const Index = () => {
           </Card>
         </div>
       </div>
+
+      {/* Chatbot */}
+      <RoadRulesChatbot 
+        isMinimized={isChatbotMinimized}
+        onToggleMinimize={() => setIsChatbotMinimized(!isChatbotMinimized)}
+      />
     </div>
   );
 };
