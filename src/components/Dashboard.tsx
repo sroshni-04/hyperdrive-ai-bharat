@@ -11,7 +11,8 @@ import {
   MapPin,
   AlertTriangle,
   CheckCircle,
-  Clock
+  Clock,
+  Users
 } from 'lucide-react';
 import { LaneDetection } from './LaneDetection';
 import { SpeedDetection } from './SpeedDetection';
@@ -91,6 +92,22 @@ export const Dashboard = () => {
             <div className="text-sm text-muted-foreground">System Time</div>
             <div className="font-mono text-lg">{currentTime.toLocaleTimeString()}</div>
           </div>
+          
+          <div className="flex items-center gap-2">
+            <a href="/family">
+              <Button variant="outline">
+                <Users className="w-4 h-4 mr-2" />
+                Family
+              </Button>
+            </a>
+            <a href="/parental-control">
+              <Button variant="outline">
+                <Shield className="w-4 h-4 mr-2" />
+                Parental Control
+              </Button>
+            </a>
+          </div>
+          
           <Button 
             onClick={() => setIsActive(!isActive)}
             variant={isActive ? "default" : "secondary"}
