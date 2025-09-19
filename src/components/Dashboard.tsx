@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { 
   Eye, 
   Gauge, 
-  Navigation, 
+  Navigation as NavigationIcon, 
   Shield, 
   Camera, 
   MapPin,
@@ -16,6 +16,7 @@ import {
 import { LaneDetection } from './LaneDetection';
 import { SpeedDetection } from './SpeedDetection';
 import { SignRecognition } from './SignRecognition';
+import Navigation from './Navigation';
 
 interface DashboardMetrics {
   speed: number;
@@ -131,7 +132,7 @@ export const Dashboard = () => {
         <Card className="glass-panel p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Navigation className="w-5 h-5 text-primary" />
+              <NavigationIcon className="w-5 h-5 text-primary" />
               <span className="font-semibold">Lane Position</span>
             </div>
             <div className={`status-indicator ${isActive ? 'bg-success' : 'bg-muted'}`} />
@@ -174,11 +175,14 @@ export const Dashboard = () => {
       </div>
 
       {/* Detection Systems */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
         <LaneDetection isActive={isActive} laneStatus={metrics.laneStatus} />
         <SpeedDetection isActive={isActive} currentSpeed={metrics.speed} />
         <SignRecognition isActive={isActive} detectedSigns={metrics.detectedSigns} />
       </div>
+
+      {/* Navigation Component */}
+      <Navigation className="mb-8" />
 
       {/* Recent Alerts */}
       <Card className="glass-panel p-6 mt-8">
