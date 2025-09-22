@@ -16,6 +16,7 @@ import {
 import { Dashboard } from '@/components/Dashboard';
 import { RoadRulesBooklet } from '@/components/RoadRulesBooklet';
 import { RoadRulesChatbot } from '@/components/RoadRulesChatbot';
+import { GlowingEffectDemo } from '@/components/GlowingEffectDemo';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -100,32 +101,9 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Features Grid */}
-          <div className="hypercar-grid mb-16">
-            <FeatureCard
-              icon={<Navigation className="w-8 h-8 text-success" />}
-              title="Lane Detection"
-              description="Real-time lane tracking with drift alerts for safer driving on Indian roads."
-              accent="success"
-            />
-            <FeatureCard
-              icon={<Gauge className="w-8 h-8 text-warning" />}
-              title="Speed Monitoring"
-              description="Intelligent speed limit detection and over-speeding warnings with penalty information."
-              accent="warning"
-            />
-            <FeatureCard
-              icon={<Camera className="w-8 h-8 text-primary" />}
-              title="Sign Recognition"
-              description="AI-powered recognition of Indian traffic signs with instant rule explanations."
-              accent="primary"
-            />
-            <FeatureCard
-              icon={<Shield className="w-8 h-8 text-accent" />}
-              title="Safety Scoring"
-              description="Continuous safety assessment with personalized driving recommendations."
-              accent="accent"
-            />
+          {/* Features Grid with Glowing Effects */}
+          <div className="mb-16">
+            <GlowingEffectDemo />
           </div>
 
           {/* Indian Road Safety Compliance */}
