@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { geofenceSchema } from '@/lib/validations';
+import { z } from 'zod';
 import { 
   MapPin, 
   Plus, 
@@ -139,26 +141,35 @@ export const GeofenceManager = () => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedFamily || !formData.name || !formData.latitude || !formData.longitude) {
+    if (!selectedFamily) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please select a family",
         variant: "destructive"
       });
       return;
     }
 
     try {
+      // Validate all inputs
+      const validated = geofenceSchema.parse({
+        name: formData.name.trim(),
+        latitude: parseFloat(formData.latitude),
+        longitude: parseFloat(formData.longitude),
+        radius: parseInt(formData.radius),
+        type: formData.type
+      });
+
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Not authenticated');
 
       const geofenceData = {
         family_id: selectedFamily,
-        name: formData.name,
-        latitude: parseFloat(formData.latitude),
-        longitude: parseFloat(formData.longitude),
-        radius: parseInt(formData.radius),
-        type: formData.type,
+        name: validated.name,
+        latitude: validated.latitude,
+        longitude: validated.longitude,
+        radius: validated.radius,
+        type: validated.type,
         created_by: userData.user.id
       };
 
@@ -188,12 +199,20 @@ export const GeofenceManager = () => {
       resetForm();
       loadGeofences(selectedFamily);
     } catch (error) {
-      console.error('Error saving geofence:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save geofence",
-        variant: "destructive"
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive"
+        });
+      } else {
+        console.error('Error saving geofence:', error);
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to save geofence",
+          variant: "destructive"
+        });
+      }
     }
   };
 

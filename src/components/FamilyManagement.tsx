@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { familyNameSchema, familyCodeSchema, inviteEmailSchema } from '@/lib/validations';
+import { z } from 'zod';
 import { 
   Users, 
   Plus, 
@@ -124,16 +126,17 @@ export const FamilyManagement = () => {
   };
 
   const createFamily = async () => {
-    if (!newFamilyName.trim()) return;
-
     try {
+      // Validate family name
+      const validated = familyNameSchema.parse({ name: newFamilyName });
+
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Not authenticated');
 
       const { data: family, error: familyError } = await supabase
         .from('families')
         .insert({
-          name: newFamilyName,
+          name: validated.name,
           created_by: userData.user.id
         })
         .select()
@@ -162,19 +165,28 @@ export const FamilyManagement = () => {
       setShowCreateDialog(false);
       loadFamilies();
     } catch (error) {
-      console.error('Error creating family:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create family",
-        variant: "destructive"
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive"
+        });
+      } else {
+        console.error('Error creating family:', error);
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to create family",
+          variant: "destructive"
+        });
+      }
     }
   };
 
   const joinFamily = async () => {
-    if (!joinCode.trim()) return;
-
     try {
+      // Validate join code
+      const validated = familyCodeSchema.parse({ code: joinCode });
+
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Not authenticated');
 
@@ -182,7 +194,7 @@ export const FamilyManagement = () => {
       const { data: family, error: familyError } = await supabase
         .from('families')
         .select('*')
-        .eq('family_code', joinCode)
+        .eq('family_code', validated.code)
         .single();
 
       if (familyError || !family) {
@@ -214,12 +226,20 @@ export const FamilyManagement = () => {
       setJoinCode('');
       loadFamilies();
     } catch (error) {
-      console.error('Error joining family:', error);
-      toast({
-        title: "Error",
-        description: "Failed to join family",
-        variant: "destructive"
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive"
+        });
+      } else {
+        console.error('Error joining family:', error);
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to join family",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -227,6 +247,11 @@ export const FamilyManagement = () => {
     if (!selectedFamily) return;
 
     try {
+      // Validate invite email if provided
+      if (inviteEmail) {
+        inviteEmailSchema.parse({ email: inviteEmail });
+      }
+
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Not authenticated');
 
@@ -250,12 +275,20 @@ export const FamilyManagement = () => {
       setInviteEmail('');
       loadFamilyInvites(selectedFamily.id);
     } catch (error) {
-      console.error('Error creating invite:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create invite",
-        variant: "destructive"
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive"
+        });
+      } else {
+        console.error('Error creating invite:', error);
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to create invite",
+          variant: "destructive"
+        });
+      }
     }
   };
 
