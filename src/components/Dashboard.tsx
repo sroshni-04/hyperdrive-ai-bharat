@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import { 
   Eye, 
   Gauge, 
@@ -15,8 +12,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Users,
-  LogOut
+  Users
 } from 'lucide-react';
 import { LaneDetection } from './LaneDetection';
 import { SpeedDetection } from './SpeedDetection';
@@ -32,8 +28,6 @@ interface DashboardMetrics {
 }
 
 export const Dashboard = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     speed: 45,
     laneStatus: 'centered',
@@ -44,27 +38,6 @@ export const Dashboard = () => {
 
   const [isActive, setIsActive] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out."
-      });
-      
-      navigate('/auth');
-    } catch (error) {
-      console.error('Error logging out:', error);
-      toast({
-        title: "Error",
-        description: "Failed to log out",
-        variant: "destructive"
-      });
-    }
-  };
 
   useEffect(() => {
     // Simulate real-time updates
@@ -133,10 +106,6 @@ export const Dashboard = () => {
                 Parental Control
               </Button>
             </a>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
           </div>
           
           <Button 
