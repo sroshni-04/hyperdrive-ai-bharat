@@ -48,21 +48,27 @@ const Auth = () => {
       // Validate inputs
       const validated = authSchema.parse({ email: email.trim(), password });
 
-      const redirectUrl = `${window.location.origin}/`;
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: validated.email,
         password: validated.password,
         options: {
-          emailRedirectTo: redirectUrl
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            email_confirm: false
+          }
         }
       });
 
       if (error) throw error;
 
-      toast({
-        title: 'Account created!',
-        description: 'Please check your email to verify your account.',
-      });
+      // Automatically sign in after successful signup
+      if (data.user) {
+        toast({
+          title: 'Account created!',
+          description: 'Welcome to AI Driver Assistance',
+        });
+        // Navigation will happen automatically via onAuthStateChange
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast({
